@@ -44,12 +44,19 @@ export const Home = () => {
     return amount;
   };
 
+  const getNftsByWalletAddress = async () =>
+    await controller.wallet.account.sys.getUserNfts(
+      activeAccount.address,
+      activeNetwork
+    );
+
   const isUnlocked =
     controller.wallet.isUnlocked() && activeAccount.address !== '';
 
   useEffect(() => {
     setChainSymbol();
     getFiatPrice();
+    getNftsByWalletAddress();
   }, [isUnlocked, activeNetwork]);
 
   const isSysTestnet = activeNetwork.chainId === 5700;

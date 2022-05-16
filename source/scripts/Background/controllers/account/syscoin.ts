@@ -5,7 +5,8 @@ import {
   setIsPendingBalances,
 } from 'state/vault';
 import { KeyringManager, Web3Accounts } from '@pollum-io/sysweb3-keyring';
-import { IKeyringAccountState } from '@pollum-io/sysweb3-utils';
+import { setActiveNetwork } from '@pollum-io/sysweb3-network';
+import { IKeyringAccountState, INetwork } from '@pollum-io/sysweb3-utils';
 import { CoingeckoCoins } from 'types/controllers';
 
 import SysTrezorController from '../trezor/syscoin';
@@ -89,8 +90,6 @@ const SysAccountController = () => {
         walletAddress
       );
 
-      console.log('balance any tok', balance);
-
       return balance;
     } catch (error) {
       return 0;
@@ -124,6 +123,53 @@ const SysAccountController = () => {
     );
   };
 
+  const getUserNfts = async (walletAddress: string, network: INetwork) => {
+    try {
+      if (network.currency === 'eth') {
+        setActiveNetwork(network);
+
+        return await Web3Accounts()
+          .getNftsByAddress(walletAddress, network)
+          .then((nfts: any) => {
+            if (nfts) {
+              store.dispatch(
+                setActiveAccountProperty({
+                  property: 'nfts',
+                  value: nfts as [],
+                })
+              );
+
+              // nfts.map(async (nft: any) => {
+              //   const nftImage = await getNftImage(String(nft.contractAddress), Number(nft.tokenID))
+
+              //   if(nftImage) {
+              //     console.log('nftImage', nftImage)
+
+              //   }
+
+              //   return;
+
+              //   const nftObject = {
+              //     ...nft,
+              //     nft_image: nftImage
+              //   }
+
+              //   store.dispatch(
+              //     setActiveAccountProperty({
+              //       property: 'nfts',
+              //       value: [nftObject],
+              //     })
+              //   );
+              // })
+            }
+          });
+      }
+      return;
+    } catch (error) {
+      throw new Error('NFTs not found, please change the current network!');
+    }
+  };
+
   const trezor = SysTrezorController();
   const tx = SysTransactionController();
 
@@ -134,6 +180,7 @@ const SysAccountController = () => {
     setAddress,
     getLatestUpdate,
     saveTokenInfo,
+    getUserNfts,
   };
 };
 

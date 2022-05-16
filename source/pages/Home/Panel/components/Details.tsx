@@ -72,6 +72,7 @@ export const DetailsView = () => {
 
     getTransactionData();
   }, [tx || assetGuid]);
+
   const openEthExplorer = () => {
     const { label } = activeNetwork;
 

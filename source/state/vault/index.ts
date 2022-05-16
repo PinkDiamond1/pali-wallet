@@ -16,6 +16,7 @@ export const initialState: IVaultState = {
     ...initialActiveAccountState,
     transactions: [],
     assets: [],
+    nfts: [],
   },
   activeNetwork: {
     chainId: 57,
